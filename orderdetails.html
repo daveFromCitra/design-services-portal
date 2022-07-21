@@ -35,7 +35,8 @@
     <!-- Main Area -->
     <section class="container">
         <a href="./index.html"><button class="btn btn-primary my-4">Back</button></a>
-        <div class="container row">
+
+        <div class="container row" id="order-info">
             <div class="col">
                 <h1>Order Number: 12345</h1>
                 <br>
@@ -76,5 +77,106 @@
             <a class="navbar-brand">DPG / Creative Services - 2022</a>
         </div>
     </nav>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, getDoc, setDoc, doc, arrayUnion, updateDoc, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+        apiKey: "AIzaSyAHeDzm8w0z6eDdvoVvipSRsfd8sK6yI54",
+        authDomain: "dpg-design-portal.firebaseapp.com",
+        projectId: "dpg-design-portal",
+        storageBucket: "dpg-design-portal.appspot.com",
+        messagingSenderId: "900767928333",
+        appId: "1:900767928333:web:a24c7b6e0c6333743ec544"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        // Init Database
+        const db = getFirestore();
+
+        const urlParams = location.search;
+        const orderRefId = urlParams.match(/(?![?refId=])\w+/g)[0];
+        
+        getDoc(doc(db, "design-jobs", orderRefId))
+        .then((doc) => setOrderData(doc.data()))
+        .catch((error) => console.error(error))
+
+        function setOrderData(orderObject) {
+            const orderInfo = `<div class="col">
+                <h1>Order Number: ${orderObject.orderNumber}</h1>
+                <br>
+                <div class="input-group">
+                    <button class="btn btn-success" id="main-update">${orderObject.status}</button>
+                    <select id="updateCommand" class="form-select" aria-label="Default select example">
+                        <option value="requested">Requested</option>
+                        <option value="inprogress" selected>In Progress</option>
+                        <option value="complete">Complete</option>
+                        <option value="deleted">Delete</option>
+                    </select>
+                    <button id="refresh-button" class="btn">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+                <br>
+                <p><b>CSR Name: </b>${orderObject.csrName}</p>
+                <p><b>Customer Contact: </b>${orderObject.customerContact}</p>
+                <p><b>Job Title: </b>${orderObject.jobTitle}</p>
+                <p><b>EPMS Number: </b>${orderObject.epmsNumber}</p>
+                <p><b>Pickup Job: </b>${orderObject.pickupJob}</p>
+                <p><b>Due Date: </b>${orderObject.dueDate}</p>
+                <p><b>Client Budget: </b>${orderObject.clientBudget}</p>
+                <p><b>Description: </b>${orderObject.description}</p>
+                <p><b>Requires Estimate?: </b>${orderObject.requiresEstimate}</p>
+                <p><b>Is a Rush?: </b> ${orderObject.rush}</p>
+                <p><b>Attached Files:</b> <a href="./TEST-PDF.pdf" download>Download File</a></p>
+            </div>
+            <div class="col">
+                <iframe src="./TEST-PDF.pdf" type="pdf" width="100%" height="100%"></iframe>
+            </div>
+            `
+            document.getElementById("order-info").innerHTML = orderInfo;
+        }
+        // console.log(orderRefId);
+    </script>
 </body>
 </html>
+
+<!-- <script>
+    const template = `<div class="col">
+                <h1>Order Number: ${orderNumber}</h1>
+                <br>
+                <div class="input-group">
+                    <button class="btn btn-success" id="main-update">${status}</button>
+                    <select id="updateCommand" class="form-select" aria-label="Default select example">
+                        <option value="requested">Requested</option>
+                        <option value="inprogress" selected>In Progress</option>
+                        <option value="complete">Complete</option>
+                        <option value="deleted">Delete</option>
+                    </select>
+                    <button id="refresh-button" class="btn">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+                <br>
+                <p><b>CSR Name: </b>${csrName}</p>
+                <p><b>Customer Contact:</b>${customerContact}</p>
+                <p><b>Job Title:</b>${jobTitle}</p>
+                <p><b>EPMS Number:</b>${epms}</p>
+                <p><b>Pickup Job:</b>${pickupJobs}</p>
+                <p><b>Due Date:</b>${dueDate}</p>
+                <p><b>Client Budget:</b>${clientBudget}</p>
+                <p><b>Description:</b>${description}</p>
+                <p><b>Requires Estimate?:</b> ${estimate}</p>
+                <p><b>Is a Rush?:</b> ${rush}</p>
+                <p><b>Attached Files:</b> <a href="./TEST-PDF.pdf" download>Download File</a></p>
+            </div>
+            <div class="col">
+                <iframe src="./TEST-PDF.pdf" type="pdf" width="100%" height="100%"></iframe>
+            </div>
+            `
+</script> -->
