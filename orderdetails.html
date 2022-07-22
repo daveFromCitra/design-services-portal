@@ -106,6 +106,22 @@
         .then((doc) => setOrderData(doc.data()))
         .catch((error) => console.error(error))
 
+        function addUrlDownloadLinks(files) {
+            let downloadLink = "";
+            files.forEach(url => {
+                downloadLink += `<a href="${url}" download>Download File</a><br>`
+            });
+            return downloadLink;
+        }
+
+        function addPdfFrames(files) {
+            let pdfFrame = "";
+            files.forEach(url => {
+                pdfFrame += `<iframe src="${url}" type="pdf" width="100%" height="100%"></iframe>`
+            });
+            return pdfFrame;
+        }
+
         function setOrderData(orderObject) {
             const orderInfo = `<div class="col">
                 <h1>Order Number: ${orderObject.orderNumber}</h1>
@@ -133,10 +149,10 @@
                 <p><b>Description: </b>${orderObject.description}</p>
                 <p><b>Requires Estimate?: </b>${orderObject.requiresEstimate}</p>
                 <p><b>Is a Rush?: </b> ${orderObject.rush}</p>
-                <p><b>Attached Files:</b> <a href="./TEST-PDF.pdf" download>Download File</a></p>
+                <p><b>Attached Files:</b><br>${ addUrlDownloadLinks(orderObject.files) }</p>
             </div>
             <div class="col">
-                <iframe src="./TEST-PDF.pdf" type="pdf" width="100%" height="100%"></iframe>
+                ${addPdfFrames(orderObject.files)}
             </div>
             `
             document.getElementById("order-info").innerHTML = orderInfo;
