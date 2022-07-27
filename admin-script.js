@@ -1,0 +1,246 @@
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, getDoc, setDoc, doc, arrayUnion, updateDoc, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-storage.js"
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyAHeDzm8w0z6eDdvoVvipSRsfd8sK6yI54",
+    authDomain: "dpg-design-portal.firebaseapp.com",
+    projectId: "dpg-design-portal",
+    storageBucket: "dpg-design-portal.appspot.com",
+    messagingSenderId: "900767928333",
+    appId: "1:900767928333:web:a24c7b6e0c6333743ec544"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+// Init Database
+const db = getFirestore();
+
+document.getElementById("main-submit").addEventListener("click", (e) => {
+    e.preventDefault();
+    autoIncrementOrderId();
+})
+
+document.getElementById("report-button").addEventListener("click", (e) => {
+    e.preventDefault();
+    reportRunner();
+})
+
+document.getElementById("main-update").addEventListener("click", (e) => {
+    e.preventDefault();
+    updateItem();
+})
+
+// Change filters selected
+document.getElementById("filter-boxes").addEventListener("change", function(e) {
+    e.preventDefault();
+    updateStack();
+})
+
+function autoIncrementOrderId() {
+    const lastOrder = query(collection(db, "design-jobs"), orderBy("orderNumber", "desc"), limit(1))
+    getDocs(lastOrder)
+        .then((docs) => {
+            docs.forEach(job => {
+                let lastOrderNumber = job.data().orderNumber
+                let orderNumber = lastOrderNumber + 1;
+                console.log(orderNumber);
+                submitDesign(orderNumber)
+            })
+        })
+};
+
+function submitDesign(orderNumber) {
+    let csrName = document.getElementById("csr-name").value;
+    let customerContact = document.getElementById("customer-contact").value;
+    let jobTitle = document.getElementById("job-title").value;
+    let epms = document.getElementById("epms").value;
+    let pickupJob = document.getElementById("pickup-job").value;
+    let dueDate = document.getElementById("due-date").value;
+    let clientBuget = document.getElementById("client-budget").value;
+    let description = document.getElementById("description").value;
+    let estimate = document.getElementById("estimate").checked;
+    let rush = document.getElementById("rush").checked;
+    let files = [];
+    // document.getElementsByClassName("file-reference").map((file) => {
+    //     files.push(file.url);
+    // })
+    for (let i = 0; i < document.getElementsByClassName("file-reference").length; i++) {
+        const element = document.getElementsByClassName("file-reference")[i];
+        files.push(element.dataset.url);
+    }
+    // console.log(document.getElementsByClassName("file-reference")[0].dataset.url);
+    addDoc(collection(db, "design-jobs"), {
+        csrName: csrName,
+        salesName: salesName,
+        customerContact: customerContact,
+        jobType: jobType,
+        jobTitle: jobTitle,
+        epmsNumber: epms,
+        pickupJob: pickupJob,
+        dueDate: dueDate,
+        clientBudget: clientBuget,
+        description: description,
+        proofingInstruictions: proofingInstructions,
+        requiresEstimate: estimate,
+        rush: rush,
+        status: "requested",
+        orderNumber: orderNumber,
+        files: files,
+        updated: []
+    })
+    updateStack();
+}
+
+function statusCheckboxes() {
+    let checkedBoxes = [];
+    document.getElementById("requestedCheckbox").checked && (checkedBoxes.push("requested"))
+    document.getElementById("inProgressCheckbox").checked && (checkedBoxes.push("inprogress"))
+    document.getElementById("completeCheckbox").checked && (checkedBoxes.push("complete"))
+    document.getElementById("deletedCheckbox").checked && (checkedBoxes.push("deleted"))
+    return checkedBoxes
+}
+
+function updateStack() {
+    const designListContainer = document.getElementById("design-stack-list");
+    let currentStack = "<tr><th>#</th><th>Order</th><th>EPMS</th><th>CSR Name</th><th>Job Title</th><th>Status</th></tr>";
+
+    let multi = query(collection(db, "design-jobs"), where("status", "in", statusCheckboxes()))
+    // let multi = query(collection(db, "design-jobs"), orderBy("orderNumber"))
+
+    getDocs(multi)
+        .then((docs) => {
+            docs.forEach(job => {
+                try {
+                    let refId = job.id;
+                    let jobData = job.data();
+                    let orderNumber = jobData.orderNumber;
+                    let epms = jobData.epmsNumber;
+                    let csrName = jobData.csrName;
+                    let jobTitle = jobData.jobTitle;
+                    let status = jobData.status;
+                    let rowStyle = 'secondary';
+                    switch (status) {
+                        case 'complete':
+                            rowStyle = 'success'
+                            break;
+                        case 'requested':
+                            rowStyle = 'warning'
+                            break;
+                        case 'inprogress':
+                            rowStyle = 'primary'
+                            break;
+                        case 'deleted':
+                            rowStyle = 'danger'
+                            break;
+                    }
+                    let listItem = ` <tr data-ref-id="${refId}" data-item-status="${status}" class="reprint-item table-${rowStyle}"><td><input class="form-check-input" type="checkbox" value="" ></td><td><a href="./orderdetails.html?refId=${refId}">${orderNumber}</a></td><td>${epms}</td><td>${csrName}</td><td>${jobTitle}</td><td>${status}</td></tr>`
+                    currentStack = currentStack + listItem;
+
+                }
+                catch (error) {
+                    console.error(error);
+                }
+            });
+
+            designListContainer.innerHTML = currentStack;
+        })
+        .catch((error) => console.error(error))
+}
+updateStack();
+
+
+const fileUploadArea = document.getElementById("formFileMultiple");
+
+fileUploadArea.addEventListener("change", () => {
+    for (let i = 0; i < fileUploadArea.files.length; i++) {
+        const file = fileUploadArea.files[i];
+        addPdfsToBucket(file)
+    }
+})
+
+function addPdfsToBucket(file) {
+    const storage = getStorage()
+    const fileRef = ref(storage, file.name);
+
+    uploadBytes(fileRef, file)
+        .then((file) => getDownloadURL(fileRef)
+            .then((url) => {
+                document.getElementById("uploading").innerHTML += `<div class="file-reference" data-url="${url}"> ${fileRef.name} uploaded </div>`;
+            })
+            .catch((error) => console.error(error))
+        )
+        .catch((error) => console.error(error));
+}
+
+function reportRunner() {
+    let multi = query(collection(db, "design-jobs"), orderBy("orderNumber"))
+
+    getDocs(multi)
+        .then((docs) => {
+            let csv = `"refId","order number", "epms number", "csr name", "job title"\r\n`;
+            docs.forEach(job => {
+                try {
+                    let refId = job.id;
+                    let jobData = job.data();
+                    let orderNumber = jobData.orderNumber;
+                    let epms = jobData.epmsNumber;
+                    let csrName = jobData.csrName;
+                    let jobTitle = jobData.jobTitle;
+
+                    csv = csv + `"${refId}", "${orderNumber}", "${epms}", "${csrName}", "${jobTitle}"\r\n`;
+                } catch (error) {
+                    console.error(error);
+                }
+            })
+            download("csv.csv", csv)
+        })
+}
+
+function download(filename, text) {
+    let element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
+// Log any update to the line item status
+function logUpdate(refId, action) {
+    let logEntry = { "action": action, "time": Date.now() }
+    getDoc(doc(db, "design-jobs", refId))
+        .then((docLog) => {
+            let updateLog = docLog.data().updated
+            updateLog.push(logEntry);
+            setDoc(doc(db, 'reprints', refId), { updated: updateLog }, { merge: true })
+        })
+}
+
+// Update the status of a line item
+function updateItem() {
+    const updateCommand = document.getElementById("updateCommand").value
+    const itemList = document.getElementById("design-stack-list")
+    const itemArray = itemList.querySelectorAll(".reprint-item")
+    itemArray.forEach(item => {
+        let refId = item.dataset.refId
+        let refIdDoc = doc(db, 'design-jobs', refId);
+        let isChecked = item.children[0].children[0].checked
+        if (isChecked) {
+            setDoc(refIdDoc, { status: updateCommand }, { merge: true })
+                .then(() => {
+                    logUpdate(refId, updateCommand);
+                    updateStack();
+                })
+        } else { }
+    });
+
+}
