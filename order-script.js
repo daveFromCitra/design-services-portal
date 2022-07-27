@@ -44,7 +44,11 @@ function addPdfFrames(files) {
     let pdfFrame = "";
     try {
         files.forEach(url => {
-            pdfFrame += `<iframe src="${url}" type="pdf" width="100%" height="100%"></iframe>`
+            if (url.includes(".pdf")) {
+                pdfFrame += `<iframe src="${url}" type="pdf" width="100%" height="100%"></iframe>`
+            } else {
+                pdfFrame += `<img src="${url}" />`
+            }
         });
     } catch (error) {
         console.error(error);

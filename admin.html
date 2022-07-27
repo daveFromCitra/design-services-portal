@@ -134,7 +134,7 @@
                                 <textarea class="form-control" id="description" rows="3"></textarea>
                                 <br>
                                 <label for="exampleFormControlTextarea1" class="form-label">Proofing Instructions</label>
-                                <textarea class="form-control" id="proofing-insturctions" rows="3"></textarea>
+                                <textarea class="form-control" id="proofing-instructions" rows="3"></textarea>
                                 <br>
                                 <div class="row container">
                                     <div class="col form-check form-switch">
@@ -150,7 +150,7 @@
                                 </div>
                                 <br>
                                 <label for="formFileMultiple" class="form-label">Multiple files input example</label>
-                                <input class="form-control" type="file" id="formFileMultiple" multiple>
+                                <input class="form-control" type="file" id="formFileMultiple" accept=".pdf, .png, .jpeg, .tiff" multiple>
                             </div>
                             <progress value="0" max="100" id="progress"></progress>
                             <div id="uploading">
@@ -159,7 +159,7 @@
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button class="btn btn-primary" id="main-submit">Submit</button>
+                            <button class="btn btn-primary" id="main-submit" data-bs-dismiss="modal">Submit</button>
                         </div>
                     </div>
                 </div>

@@ -56,13 +56,16 @@ function autoIncrementOrderId() {
 
 function submitDesign(orderNumber) {
     let csrName = document.getElementById("csr-name").value;
+    let salesName = document.getElementById("sales-name").value;
     let customerContact = document.getElementById("customer-contact").value;
+    let jobType = document.getElementById("job-type").value;
     let jobTitle = document.getElementById("job-title").value;
     let epms = document.getElementById("epms").value;
     let pickupJob = document.getElementById("pickup-job").value;
     let dueDate = document.getElementById("due-date").value;
     let clientBuget = document.getElementById("client-budget").value;
     let description = document.getElementById("description").value;
+    let proofingInstructions = document.getElementById("proofing-instructions").value;
     let estimate = document.getElementById("estimate").checked;
     let rush = document.getElementById("rush").checked;
     let files = [];
@@ -166,7 +169,7 @@ fileUploadArea.addEventListener("change", () => {
 function addPdfsToBucket(file) {
     const storage = getStorage()
     const fileRef = ref(storage, file.name);
-
+    document.getElementById("main-submit").style.display = "none"
     uploadBytes(fileRef, file)
         .then((file) => getDownloadURL(fileRef)
             .then((url) => {
@@ -174,7 +177,10 @@ function addPdfsToBucket(file) {
             })
             .catch((error) => console.error(error))
         )
-        .catch((error) => console.error(error));
+        .catch((error) => console.error(error))
+        .finally((url) => {
+            document.getElementById("main-submit").style.display = "block"
+        })
 }
 
 function reportRunner() {

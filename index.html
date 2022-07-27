@@ -146,7 +146,7 @@
                                 </div>
                                 <br>
                                 <label for="formFileMultiple" class="form-label">Multiple files input example</label>
-                                <input class="form-control" type="file" id="formFileMultiple" multiple>
+                                <input class="form-control" type="file" id="formFileMultiple" accept=".pdf, .png, .jpeg, .tiff" multiple>
                             </div>
                             <progress value="0" max="100" id="progress"></progress>
                             <div id="uploading">
@@ -155,7 +155,7 @@
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button class="btn btn-primary" id="main-submit">Submit</button>
+                            <button class="btn btn-primary" id="main-submit" data-bs-dismiss="modal">Submit</button>
                         </div>
                     </div>
                 </div>

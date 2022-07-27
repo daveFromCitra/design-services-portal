@@ -181,7 +181,7 @@ function updateStack() {
 function addPdfsToBucket(file) {
     const storage = getStorage()
     const fileRef = ref(storage, file.name);
-
+    document.getElementById("main-submit").style.display = "none"
     uploadBytes(fileRef, file)
         .then((file) => getDownloadURL(fileRef)
             .then((url) => {
@@ -190,6 +190,9 @@ function addPdfsToBucket(file) {
             .catch((error) => console.error(error))
         )
         .catch((error) => console.error(error));
+        .finally((url) => {
+            document.getElementById("main-submit").style.display = "block"
+        })
 }
 
 updateStack();
