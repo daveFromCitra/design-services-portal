@@ -110,9 +110,19 @@ function statusCheckboxes() {
 
 function updateStack() {
     const designListContainer = document.getElementById("design-stack-list");
-    let currentStack = "<tr><th>#</th><th>Order</th><th>EPMS</th><th>CSR Name</th><th>Job Title</th><th>Status</th></tr>";
+    let currentStack = `<tr>
+                            <th>#</th>
+                            <th>Order</th>
+                            <th>Due Date</th>
+                            <th>CSR Name</th>
+                            <th>EPMS</th>
+                            <th>Customer</th>
+                            <th>Job Title</th>
+                            <th>Status</th>
+                        </tr>`;
+    // let currentStack = "<tr><th>#</th><th>Order</th><th>EPMS</th><th>CSR Name</th><th>Job Title</th><th>Status</th></tr>";
 
-    let multi = query(collection(db, "design-jobs"), where("status", "in", statusCheckboxes()))
+    let multi = query(collection(db, "design-jobs"), orderBy("orderNumber"), where("status", "in", statusCheckboxes()))
     // let multi = query(collection(db, "design-jobs"), orderBy("orderNumber"))
 
     getDocs(multi)
@@ -122,6 +132,8 @@ function updateStack() {
                     let refId = job.id;
                     let jobData = job.data();
                     let orderNumber = jobData.orderNumber;
+                    let dueDate = jobData.dueDate;
+                    let customerContact = jobData.customerContact;
                     let epms = jobData.epmsNumber;
                     let csrName = jobData.csrName;
                     let jobTitle = jobData.jobTitle;
@@ -141,7 +153,17 @@ function updateStack() {
                             rowStyle = 'danger'
                             break;
                     }
-                    let listItem = ` <tr data-ref-id="${refId}" data-item-status="${status}" class="reprint-item table-${rowStyle}"><td><input class="form-check-input" type="checkbox" value="" ></td><td><a href="./orderdetails.html?refId=${refId}">${orderNumber}</a></td><td>${epms}</td><td>${csrName}</td><td>${jobTitle}</td><td>${status}</td></tr>`
+                    let listItem = ` <tr data-ref-id="${refId}" data-item-status="${status}" class="reprint-item table-${rowStyle}">
+                                        <td><input class="form-check-input" type="checkbox" value="" ></td>
+                                        <td><a href="./orderdetails.html?refId=${refId}">${orderNumber}</a></td>
+                                        <td>${dueDate}</td>
+                                        <td>${csrName}</td>
+                                        <td>${epms}</td>
+                                        <td>${customerContact}</td>
+                                        <td>${jobTitle}</td>
+                                        <td>${status}</td>
+                                    </tr>`
+                    // let listItem = ` <tr data-ref-id="${refId}" data-item-status="${status}" class="reprint-item table-${rowStyle}"><td><input class="form-check-input" type="checkbox" value="" ></td><td><a href="./orderdetails.html?refId=${refId}">${orderNumber}</a></td><td>${epms}</td><td>${csrName}</td><td>${jobTitle}</td><td>${status}</td></tr>`
                     currentStack = currentStack + listItem;
 
                 }

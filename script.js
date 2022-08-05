@@ -40,7 +40,7 @@ function autoIncrementOrderId() {
                 let lastOrderNumber = job.data().orderNumber
                 let orderNumber = lastOrderNumber + 1;
                 console.log(orderNumber);
-                submitDesign(orderNumber)
+                submitDesign(orderNumber);
             })
         })
 };
@@ -135,9 +135,17 @@ function download(filename, text) {
 
 function updateStack() {
     const designListContainer = document.getElementById("design-stack-list");
-    let currentStack = "<tr><th>Order</th><th>EPMS</th><th>CSR Name</th><th>Job Title</th><th>Status</th></tr>";
+    let currentStack = `<tr>
+                            <th>Order</th>
+                            <th>Due Date</th>
+                            <th>CSR Name</th>
+                            <th>EPMS</th>
+                            <th>Customer</th>
+                            <th>Job Title</th>
+                            <th>Status</th>
+                        </tr>`;
 
-    let multi = query(collection(db, "design-jobs"), where("status", "in", statusCheckboxes()))
+    let multi = query(collection(db, "design-jobs"), orderBy("orderNumber"), where("status", "in", statusCheckboxes()))
     getDocs(multi)
         .then((docs) => {
             docs.forEach(job => {
@@ -146,6 +154,8 @@ function updateStack() {
                     let jobData = job.data();
                     let orderNumber = jobData.orderNumber;
                     let epms = jobData.epmsNumber;
+                    let dueDate = jobData.dueDate;
+                    let customerContact = jobData.customerContact;
                     let csrName = jobData.csrName;
                     let jobTitle = jobData.jobTitle;
                     let status = jobData.status;
@@ -164,7 +174,15 @@ function updateStack() {
                             rowStyle = 'danger'
                             break;
                     }
-                    let listItem = ` <tr data-ref-id="${refId}" data-item-status="${status}" class="reprint-item table-${rowStyle}"><td>${orderNumber}</td><td>${epms}</td><td>${csrName}</td><td>${jobTitle}</td><td>${status}</td></tr>`
+                    let listItem = `<tr data-ref-id="${refId}" data-item-status="${status}" class="reprint-item table-${rowStyle}">
+                                        <td>${orderNumber}</td>
+                                        <td>${dueDate}</td>
+                                        <td>${csrName}</td>
+                                        <td>${epms}</td>
+                                        <td>${customerContact}</td>
+                                        <td>${jobTitle}</td>
+                                        <td>${status}</td>
+                                    </tr>`
                     currentStack = currentStack + listItem;
 
                 }
@@ -189,7 +207,7 @@ function addPdfsToBucket(file) {
             })
             .catch((error) => console.error(error))
         )
-        .catch((error) => console.error(error));
+        .catch((error) => console.error(error))
         .finally((url) => {
             document.getElementById("main-submit").style.display = "block"
         })

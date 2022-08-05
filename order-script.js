@@ -91,6 +91,13 @@ function updateItem() {
         })
 }
 
+function jobTimerStart() {
+    let timestamp = Date.now();
+    getDoc(doc(db, "design-jobs", orderRefId))
+    .then()
+}
+
+
 document.getElementById("main-update").addEventListener("click", (e) => {
     e.preventDefault();
     console.log("EVERYTHING!!!");
