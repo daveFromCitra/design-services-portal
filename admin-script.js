@@ -36,7 +36,7 @@ document.getElementById("main-update").addEventListener("click", (e) => {
 })
 
 // Change filters selected
-document.getElementById("filter-boxes").addEventListener("change", function(e) {
+document.getElementById("filter-boxes").addEventListener("change", (e) => {
     e.preventDefault();
     updateStack();
 })
@@ -94,6 +94,8 @@ function submitDesign(orderNumber) {
         status: "requested",
         orderNumber: orderNumber,
         files: files,
+        completionDate: "-",
+        billableHours: 0,
         updated: []
     })
     updateStack();
@@ -119,6 +121,9 @@ function updateStack() {
                             <th>Customer</th>
                             <th>Job Title</th>
                             <th>Status</th>
+                            <th>Completion Date</th>
+                            <th>Billable Hours</th>
+                            <th>refID</th>
                         </tr>`;
     // let currentStack = "<tr><th>#</th><th>Order</th><th>EPMS</th><th>CSR Name</th><th>Job Title</th><th>Status</th></tr>";
 
@@ -134,6 +139,8 @@ function updateStack() {
                     let orderNumber = jobData.orderNumber;
                     let dueDate = jobData.dueDate;
                     let customerContact = jobData.customerContact;
+                    let completionDate = jobData.completionDate;
+                    let billableHours = jobData.billableHours;
                     let epms = jobData.epmsNumber;
                     let csrName = jobData.csrName;
                     let jobTitle = jobData.jobTitle;
@@ -153,7 +160,7 @@ function updateStack() {
                             rowStyle = 'danger'
                             break;
                     }
-                    let listItem = ` <tr data-ref-id="${refId}" data-item-status="${status}" class="reprint-item table-${rowStyle}">
+                    let listItem = `<tr data-ref-id="${refId}" data-item-status="${status}" class="reprint-item table-${rowStyle}">
                                         <td><input class="form-check-input" type="checkbox" value="" ></td>
                                         <td><a href="./orderdetails.html?refId=${refId}">${orderNumber}</a></td>
                                         <td>${dueDate}</td>
@@ -162,6 +169,10 @@ function updateStack() {
                                         <td>${customerContact}</td>
                                         <td>${jobTitle}</td>
                                         <td>${status}</td>
+                                        <td>${completionDate}</td>
+                                        <td>${billableHours}</td>
+                                        <td>${refId}</td>
+
                                     </tr>`
                     // let listItem = ` <tr data-ref-id="${refId}" data-item-status="${status}" class="reprint-item table-${rowStyle}"><td><input class="form-check-input" type="checkbox" value="" ></td><td><a href="./orderdetails.html?refId=${refId}">${orderNumber}</a></td><td>${epms}</td><td>${csrName}</td><td>${jobTitle}</td><td>${status}</td></tr>`
                     currentStack = currentStack + listItem;

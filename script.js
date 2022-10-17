@@ -60,7 +60,9 @@ function submitDesign(orderNumber) {
     let estimate = document.getElementById("estimate").checked;
     let rush = document.getElementById("rush").checked;
     let files = [];
-
+    // document.getElementsByClassName("file-reference").map((file) => {
+    //     files.push(file.url);
+    // })
     for (let i = 0; i < document.getElementsByClassName("file-reference").length; i++) {
         const element = document.getElementsByClassName("file-reference")[i];
         files.push(element.dataset.url);
@@ -82,7 +84,10 @@ function submitDesign(orderNumber) {
         rush: rush,
         status: "requested",
         orderNumber: orderNumber,
-        files: files
+        files: files,
+        completionDate: "-",
+        billableHours: 0,
+        updated: []
     })
     updateStack();
 }
@@ -143,9 +148,15 @@ function updateStack() {
                             <th>Customer</th>
                             <th>Job Title</th>
                             <th>Status</th>
+                            <th>Completion Date</th>
+                            <th>Billable Hours</th>
+                            <th>refID</th>
                         </tr>`;
+    // let currentStack = "<tr><th>#</th><th>Order</th><th>EPMS</th><th>CSR Name</th><th>Job Title</th><th>Status</th></tr>";
 
     let multi = query(collection(db, "design-jobs"), orderBy("orderNumber"), where("status", "in", statusCheckboxes()))
+    // let multi = query(collection(db, "design-jobs"), orderBy("orderNumber"))
+
     getDocs(multi)
         .then((docs) => {
             docs.forEach(job => {
@@ -153,9 +164,11 @@ function updateStack() {
                     let refId = job.id;
                     let jobData = job.data();
                     let orderNumber = jobData.orderNumber;
-                    let epms = jobData.epmsNumber;
                     let dueDate = jobData.dueDate;
                     let customerContact = jobData.customerContact;
+                    let completionDate = jobData.completionDate;
+                    let billableHours = jobData.billableHours;
+                    let epms = jobData.epmsNumber;
                     let csrName = jobData.csrName;
                     let jobTitle = jobData.jobTitle;
                     let status = jobData.status;
@@ -182,7 +195,12 @@ function updateStack() {
                                         <td>${customerContact}</td>
                                         <td>${jobTitle}</td>
                                         <td>${status}</td>
+                                        <td>${completionDate}</td>
+                                        <td>${billableHours}</td>
+                                        <td>${refId}</td>
+
                                     </tr>`
+                    // let listItem = ` <tr data-ref-id="${refId}" data-item-status="${status}" class="reprint-item table-${rowStyle}"><td><input class="form-check-input" type="checkbox" value="" ></td><td><a href="./orderdetails.html?refId=${refId}">${orderNumber}</a></td><td>${epms}</td><td>${csrName}</td><td>${jobTitle}</td><td>${status}</td></tr>`
                     currentStack = currentStack + listItem;
 
                 }

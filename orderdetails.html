@@ -34,9 +34,9 @@
         </div>
     </nav>
     <!-- Main Area -->
-    <section class="container">
+    <section class="container pb-5">
         <a href="./admin.html"><button class="btn btn-primary my-4">Back</button></a>
-        <div class="input-group w-50">
+        <div class="input-group w-50 mb-3">
             <button class="btn btn-success" id="main-update" onclick="updateItem()">Update</button>
             <select id="updateCommand" class="form-select" aria-label="Default select example">
                 <option value="requested">Requested</option>
@@ -44,12 +44,18 @@
                 <option value="complete">Complete</option>
                 <option value="deleted">Delete</option>
             </select>
-            <button id="refresh-button" class="btn">
-                <i class="bi bi-arrow-clockwise"></i>
-            </button>
+        </div>
+        <div class="input-group w-50 mb-3">
+            <button class="btn btn-primary" type="button" id="complete-date-submit">Complete Date</button>
+            <input class="form-control" type="date" id="complete-date">
+        </div>
+        <div class="input-group w-50 mb-3">
+            <button class="btn btn-secondary" type="button" id="hours-worked-submit">Hours Worked</button>
+            <input class="form-control" type="number" id="hours-worked" step="0.25" name="quantity" min="0" max="1000">
         </div>
         <br>
-        <div class="container row" id="order-info">
+        <b>Contact your the CSR for more instructions.</b>
+        <div class="container row pb-5" id="order-info">
             <!-- Info Area -->
         </div>
     </section>
@@ -60,3 +66,4 @@
     </nav>
 </body>
 </html>
+

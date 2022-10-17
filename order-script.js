@@ -60,7 +60,8 @@ function setOrderData(orderObject) {
     const orderInfo = `<div class="col">
          <h1>Order Number: ${orderObject.orderNumber}</h1>
          <p><b>Status: </b>${orderObject.status}</p>
-         <br>
+         <hr>
+         <p><b>Sales Rep Name: </b>${orderObject.salesName}</p>
          <p><b>CSR Name: </b>${orderObject.csrName}</p>
          <p><b>Customer Contact: </b>${orderObject.customerContact}</p>
          <p><b>Job Title: </b>${orderObject.jobTitle}</p>
@@ -69,8 +70,12 @@ function setOrderData(orderObject) {
          <p><b>Due Date: </b>${orderObject.dueDate}</p>
          <p><b>Client Budget: </b>${orderObject.clientBudget}</p>
          <p><b>Description: </b>${orderObject.description}</p>
+         <p><b>Proofing Instructions: </b>${orderObject.proofingInstruictions}</p>
          <p><b>Requires Estimate?: </b>${orderObject.requiresEstimate}</p>
          <p><b>Is a Rush?: </b> ${orderObject.rush}</p>
+         <p><b>Completed Date: </b> ${orderObject.completionDate}</p>
+         <p><b>Billable Hours: </b> ${orderObject.billableHours}</p>
+
          <p><b>Attached Files:</b><br>${addUrlDownloadLinks(orderObject.files)}</p>
      </div>
      <div class="col">
@@ -78,6 +83,7 @@ function setOrderData(orderObject) {
      </div>
      `
     document.getElementById("order-info").innerHTML = orderInfo;
+    document.getElementById("hours-worked").value = orderObject.billableHours
 }
 
 function updateItem() {
@@ -91,6 +97,29 @@ function updateItem() {
         })
 }
 
+function updateCompleteDate() {
+    let refId = orderRefId;
+    let refIdDoc = doc(db, 'design-jobs', refId);
+    const updateDate = document.getElementById("complete-date").value
+    setDoc(refIdDoc, { completionDate: updateDate }, { merge: true })
+        .then(() => {
+            //logUpdate(refId, updateCommand);
+            updatePage();
+        })
+}
+
+function updateHoursWorked() {
+    let refId = orderRefId;
+    let refIdDoc = doc(db, 'design-jobs', refId);
+    const updateHours = document.getElementById("hours-worked").value
+    setDoc(refIdDoc, { billableHours: updateHours }, { merge: true })
+        .then(() => {
+            //logUpdate(refId, updateCommand);
+            updatePage();
+        })
+}
+
+
 function jobTimerStart() {
     let timestamp = Date.now();
     getDoc(doc(db, "design-jobs", orderRefId))
@@ -100,8 +129,17 @@ function jobTimerStart() {
 
 document.getElementById("main-update").addEventListener("click", (e) => {
     e.preventDefault();
-    console.log("EVERYTHING!!!");
     updateItem();
+})
+
+document.getElementById("complete-date-submit").addEventListener("click", (e) => {
+    e.preventDefault();
+    updateCompleteDate();
+})
+
+document.getElementById("hours-worked-submit").addEventListener("click", (e) => {
+    e.preventDefault();
+    updateHoursWorked();
 })
 
 updatePage();
